@@ -2,7 +2,7 @@
 Created by <a href="https://github.com/Na-Z" target="_blank">Na Zhao</a> from 
 <a href="http://www.nus.edu.sg/" target="_blank">National University of Singapore</a>
 
-![teaser](https://github.com/Na-Z/PS-2Net/blob/master/teaser.jpg)
+![teaser](https://github.com/Na-Z/PS-2Net/blob/master/teaser.pdf)
 
 ## Introduction
 This repository contains the PyTorch implementation for our ICPR 2020 Paper 
