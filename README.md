@@ -31,7 +31,7 @@ It may wrk with newer versions, but that is not gauranteed.
     
 ## Usage
 ### Data preparation
-For S3DIS, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/preprocess/s3dis/REAME.md) under `./preprocess/s3dis` folder.
+For S3DIS, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/preprocess/s3dis/README.md) under `./preprocess/s3dis` folder.
 
 For ScanNet, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/preprocess/scannet/README.md) under `./preprocess/scannet` folder.
 
@@ -57,7 +57,8 @@ For ScanNet, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/pre
     python main_P2/eval_s3dis.py --datafolder ./datasets/S3DIS/P2/ --test_area $Area_Index
     ```    
 
-Note that these command just for one area (specified by `--test_area $Area_Index` option) validation. Please iterate `--test_area` option to obtain results on other areas. The final result is computed based on **6-fold cross validation**.
+Note that these commands are for training and evaluating only one area (specified by `--test_area $Area_Index` option) validation. 
+Please iterate `--test_area` option to obtain results on other areas. The final result is computed based on **6-fold cross validation**.
 
 
 ### Running experiments on ScanNet
