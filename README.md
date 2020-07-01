@@ -6,7 +6,7 @@ Created by <a href="https://github.com/Na-Z" target="_blank">Na Zhao</a> from
 
 ## Introduction
 This repository contains the PyTorch implementation for our ICPR 2020 Paper 
-"PS^2Net: A Locally and Globally Aware Network for Point-Based SemanticSegmentation" by Na Zhao, Tat Seng Chua, Gim Hee Lee 
+"*PS<sup>2</sup>Net: A Locally and Globally Aware Network for Point-Based SemanticSegmentation*" by Na Zhao, Tat Seng Chua, Gim Hee Lee 
 [[arXiv](https://arxiv.org/pdf/1908.05425.pdf)]
 
 In this paper, we present the PS<sup>2</sup>-Net - a locally and globally aware deep learning framework for semantic segmentation 
@@ -19,4 +19,91 @@ unordered point clouds. We further provide theoretical proof to guarantee the pe
 network. We perform extensive experiments on two large-scale 3D indoor scene datasets and demonstrate that our PS<sup>2</sup>-Net 
 is able to achieve state-of-the-art performances as compared to existing approaches.
 
-Code will be released soon.
+##Setup
+- Install `python` --This repo is tested with `python 3.6.5`.
+- Install `pytorch` with CUDA -- This repo is tested with `torch 0.4.0`, `CUDA 9.0`. 
+It may wrk with newer versions, but that is not gauranteed.
+- Install `faiss` with CPU version by `conda install faiss-cpu -c pytorch` -- This repo is tested with `faiss 1.4.0`
+- Install dependencies
+    ```
+    pip install -r requirements.txt
+    ```
+    
+## Usage
+### Data preparation
+For S3DIS, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/s3dis/README.md) under `s3dis` folder.
+
+For ScanNet, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/scannet/README.md) under `scannet` folder.
+
+### Running experiments on S3DIS
+#### Follow data preparation setup (P1):
++ train on each area:
+    ```
+    cd main_P1
+    python train.py --dataset_name S3DIS --data_dir ../datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --test_area $Area_Index
+    ```
++ test on the corresponding area:
+    ```
+    cd main_P1
+    python test.py --dataset_name S3DIS --data_dir ../datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
+    ```
+    
+#### Follow data preparation setup (P2): 
++ train on each area:
+    ```
+    cd main_P2
+    python train.py --dataset_name S3DIS --dataset_size 114004 --data_dir ../datasets/S3DIS/P2/ --classes 13 --input_feat 6 --log_dir $LOG_DIR  --test_area $Area_Index
+    ```
++ test on the corresponding area:
+    ```
+    cd main_P2
+    python inference.py --dataset_name S3DIS --data_dir ../datasets/S3DIS/P2/ --classes 13 --input_feat 6 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
+    python eval_s3dis.py --datafolder ../datasets/S3DIS/P2/ --test_area $Area_Index
+    ```    
+
+Note that these command just for one area (specified by --test_area $Area_Index option) validation. Please iterate --test_area option to obtain results on other areas. The final result is computed based on 6-fold cross validation.
+
+
+### Running experiments on ScanNet
+#### Follow data preparation setup (P3):
++ train:
+    ```
+    cd main_P1
+    python train.py --dataset_name ScanNet --data_dir ../datasets/ScanNet/P3/ --classes 21 --input_feat 3 --log_dir $LOG_DIR 
+    ```
++ test:
+    ```
+    cd main_P1
+    python test.py --dataset_name ScanNet --data_dir ../datasets/ScanNet/P3/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME
+    ```
+    
+#### Follow data preparation setup (P2): 
++ train:
+    ```
+    cd main_P2
+    python train.py --dataset_name ScanNet --dataset_size 93402 --data_dir ../datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  
+    ```
++ test:
+    ```
+    cd main_P2
+    python inference.py --dataset_name ScanNet --data_dir ../datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME 
+    python eval_scannet.py --datafolder ../datasets/ScanNet/P2/ --picklefile $../datasets/ScanNet/P3/
+    ```    
+
+## Citation
+Please cite our paper if it is helpful to your research:
+
+    @article{zhao2019ps,
+      title={PS\^{} 2-Net: A Locally and Globally Aware Network for Point-Based Semantic Segmentation},
+      author={Zhao, Na and Chua, Tat-Seng and Lee, Gim Hee},
+      journal={arXiv preprint arXiv:1908.05425},
+      year={2019}
+    }
+
+
+## Acknowledgements
+Our implementation leverages on the source code or data from the following repositories:
+- [PointNet](https://github.com/charlesq34/pointnet/)
+- [PointNet++](https://github.com/charlesq34/pointnet2/)
+- [PointCNN](https://github.com/yangyanli/PointCNN)
+- [SO-Net](https://github.com/lijx10/SO-Net)
