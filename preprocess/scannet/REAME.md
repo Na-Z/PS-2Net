@@ -1,11 +1,11 @@
-###Prepare ScanNet Data according to data preparation setups in PointNet++ (P3):
+### Prepare ScanNet Data according to data preparation setups in PointNet++ (P3):
 We exactly follow the instructions in [PointNet++](https://github.com/charlesq34/pointnet2/tree/master/scannet) 
-to prepare data for ScanNet. The K-Nearest-Neighbors are computed when loading the data in `P1_data_loader.py`.
+to prepare data for ScanNet. The K-Nearest-Neighbors are computed when loading the data in `./data/P1_data_loader.py`.
 
 You can download the [preprocessed data (1.72G)](https://shapenet.cs.stanford.edu/media/scannet_data_pointnet2.zip) provided 
-by PointNet++ official github repo. After unzipping the downloaded file, move the two pickle files into `./datasets/ScanNet/P1`.
+by PointNet++ official github repo. After unzipping the downloaded file, move the two pickle files into `./datasets/ScanNet/P3`.
 
-Or you can follow the instructions in [PointNet++](https://github.com/charlesq34/pointnet2/tree/master/scannet) to 
+Or you can follow the [instructions in PointNet++](https://github.com/charlesq34/pointnet2/tree/master/scannet) to 
 prepare the data by yourself.
 
 Note that we used the data provided by PointNet++ in our experiments. 
@@ -18,9 +18,9 @@ The `./datasets/ScanNet/P3/` directory should look like this:
         ├── scannet_test.pickle
 ```
 
-###Prepare ScanNet Data according to data preparation setups in PointCNN (P2):
+### Prepare ScanNet Data according to data preparation setups in PointCNN (P2):
 We exactly follow the instructions in [PointCNN](https://github.com/yangyanli/PointCNN) 
-to prepare data for ScanNet. The K-Nearest-Neighbors are computed when loading the data in `P2_data_loader.py`.
+to prepare data for ScanNet. The K-Nearest-Neighbors are computed when loading the data in `./data/P2_data_loader.py`.
 
 PointCNN conducts further processing on [PointNet++ preprocessed data (1.72G)](https://shapenet.cs.stanford.edu/media/scannet_data_pointnet2.zip):
 

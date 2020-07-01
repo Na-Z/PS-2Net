@@ -1,4 +1,4 @@
-###Prepare S3DIS Data according to data preparation setups in PointNet (P1):
+### Prepare S3DIS Data according to data preparation setups in PointNet (P1):
 We follow the instructions in [PointNet](https://github.com/charlesq34/pointnet/tree/master/sem_seg) 
 to prepare data for S3DIS, except that we also compute the static K-Nearest-Neighbors for each point 
 in the coordinate space.
@@ -13,7 +13,7 @@ Follows are the detail preparation setups:
 
     ```python preprocess_s3dis.py -s ../../datasets/S3DIS/P1/npy_data -d ../../datasets/S3DIS/P1/```
     
-    One folder will be generated under `./datasets/S3DIS/P1/` by default.   
+    One folder will be generated under `./datasets/S3DIS/P1/` by default. Note that the KNN indices are also included in the HDF5 data.  
 
 Eventually, the `./datasets/S3DIS/P1/` directory should look like this:
 ```bash
@@ -33,9 +33,9 @@ Eventually, the `./datasets/S3DIS/P1/` directory should look like this:
 ```
 
 
-###Prepare S3DIS Data according to data preparation setups in PointCNN (P2):
+### Prepare S3DIS Data according to data preparation setups in PointCNN (P2):
 We exactly follow the instructions in [PointCNN](https://github.com/yangyanli/PointCNN) 
-to prepare data for S3DIS. The K-Nearest-Neighbors are computed when loading the data in `P2_data_loader.py`.
+to prepare data for S3DIS. The K-Nearest-Neighbors are computed when loading the data in `./data/P2_data_loader.py`.
 
 Run the following scripts after downloading [S3DIS Dataset Version 1.2](http://buildingparser.stanford.edu/dataset.html).
 

@@ -19,7 +19,7 @@ unordered point clouds. We further provide theoretical proof to guarantee the pe
 network. We perform extensive experiments on two large-scale 3D indoor scene datasets and demonstrate that our PS<sup>2</sup>-Net 
 is able to achieve state-of-the-art performances as compared to existing approaches.
 
-##Setup
+## Setup
 - Install `python` --This repo is tested with `python 3.6.5`.
 - Install `pytorch` with CUDA -- This repo is tested with `torch 0.4.0`, `CUDA 9.0`. 
 It may wrk with newer versions, but that is not gauranteed.
@@ -31,63 +31,55 @@ It may wrk with newer versions, but that is not gauranteed.
     
 ## Usage
 ### Data preparation
-For S3DIS, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/s3dis/README.md) under `s3dis` folder.
+For S3DIS, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/preprocess/s3dis/REAME.md) under `./preprocess/s3dis` folder.
 
-For ScanNet, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/scannet/README.md) under `scannet` folder.
+For ScanNet, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/preprocess/scannet/README.md) under `./preprocess/scannet` folder.
 
 ### Running experiments on S3DIS
-#### Follow data preparation setup (P1):
+#### Under data preparation setup (P1):
 + train on each area:
     ```
-    cd main_P1
-    python train.py --dataset_name S3DIS --data_dir ../datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --test_area $Area_Index
+    python main_P1/train.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --test_area $Area_Index
     ```
 + test on the corresponding area:
     ```
-    cd main_P1
-    python test.py --dataset_name S3DIS --data_dir ../datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
+    python main_P1/test.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
     ```
     
-#### Follow data preparation setup (P2): 
+#### Under data preparation setup (P2): 
 + train on each area:
     ```
-    cd main_P2
-    python train.py --dataset_name S3DIS --dataset_size 114004 --data_dir ../datasets/S3DIS/P2/ --classes 13 --input_feat 6 --log_dir $LOG_DIR  --test_area $Area_Index
+    python main_P2/train.py --dataset_name S3DIS --dataset_size 114004 --data_dir ./datasets/S3DIS/P2/ --classes 13 --input_feat 6 --log_dir $LOG_DIR  --test_area $Area_Index
     ```
 + test on the corresponding area:
     ```
-    cd main_P2
-    python inference.py --dataset_name S3DIS --data_dir ../datasets/S3DIS/P2/ --classes 13 --input_feat 6 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
-    python eval_s3dis.py --datafolder ../datasets/S3DIS/P2/ --test_area $Area_Index
+    python main_P2/inference.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P2/ --classes 13 --input_feat 6 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
+    python main_P2/eval_s3dis.py --datafolder ./datasets/S3DIS/P2/ --test_area $Area_Index
     ```    
 
-Note that these command just for one area (specified by --test_area $Area_Index option) validation. Please iterate --test_area option to obtain results on other areas. The final result is computed based on 6-fold cross validation.
+Note that these command just for one area (specified by `--test_area $Area_Index` option) validation. Please iterate `--test_area` option to obtain results on other areas. The final result is computed based on **6-fold cross validation**.
 
 
 ### Running experiments on ScanNet
-#### Follow data preparation setup (P3):
+#### Under data preparation setup (P3):
 + train:
     ```
-    cd main_P1
-    python train.py --dataset_name ScanNet --data_dir ../datasets/ScanNet/P3/ --classes 21 --input_feat 3 --log_dir $LOG_DIR 
+    python main_P1/train.py --dataset_name ScanNet --data_dir ./datasets/ScanNet/P3/ --classes 21 --input_feat 3 --log_dir $LOG_DIR 
     ```
 + test:
     ```
-    cd main_P1
-    python test.py --dataset_name ScanNet --data_dir ../datasets/ScanNet/P3/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME
+    python main_P1/test.py --dataset_name ScanNet --data_dir ./datasets/ScanNet/P3/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME
     ```
     
-#### Follow data preparation setup (P2): 
+#### Under data preparation setup (P2): 
 + train:
     ```
-    cd main_P2
-    python train.py --dataset_name ScanNet --dataset_size 93402 --data_dir ../datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  
+    python main_P2/train.py --dataset_name ScanNet --dataset_size 93402 --data_dir ./datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  
     ```
 + test:
     ```
-    cd main_P2
-    python inference.py --dataset_name ScanNet --data_dir ../datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME 
-    python eval_scannet.py --datafolder ../datasets/ScanNet/P2/ --picklefile $../datasets/ScanNet/P3/
+    python main_P2/inference.py --dataset_name ScanNet --data_dir ./datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME 
+    python main_P2/eval_scannet.py --datafolder ./datasets/ScanNet/P2/ --picklefile ./datasets/ScanNet/P3/
     ```    
 
 ## Citation
