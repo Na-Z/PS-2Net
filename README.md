@@ -35,15 +35,23 @@ For S3DIS, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/prepr
 
 For ScanNet, follow the [README](https://github.com/Na-Z/PS-2Net/blob/master/preprocess/scannet/README.md) under `./preprocess/scannet` folder.
 
+### Visualization
+We use visdom for visualization. Loss values and performance are plotted in real-time. Please start the visdom server before training:
+    ```python -m visdom.server```
+
+The visualization results can be viewed in browser with the address of: `http://localhost:8097`.
+
+
+
 ### Running experiments on S3DIS
 #### Under data preparation setup (P1):
 + train on each area:
     ```
-    python main_P1/train.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --test_area $Area_Index
+    python main_P1/train.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P1/ --classes 13 --input_feat 9 --log_dir $LOG_DIR  --test_area $Area_Index
     ```
 + test on the corresponding area:
     ```
-    python main_P1/test.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P1/' --classes 13 --input_feat 9 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
+    python main_P1/test.py --dataset_name S3DIS --data_dir ./datasets/S3DIS/P1/ --classes 13 --input_feat 9 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME --test_area $Area_Index
     ```
     
 #### Under data preparation setup (P2): 
