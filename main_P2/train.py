@@ -39,9 +39,7 @@ parser.add_argument('--display_id', type=int, default=700, help='window id of th
 parser.add_argument('--iter_error_print', type=int, default=250, help='the number of iterations to print training error')
 parser.add_argument('--best_iou', type=float, default=0.45, help='theasfold (testing mIoU) to save network')
 
-parser.add_argument('--max_point_num', type=int, default=8192, help='Maximum point number [default: 8192]')
-parser.add_argument('--sample_num', type=int, default=2048, help='Sampled point number [default: 2048]')
-
+parser.add_argument('--num_point', type=int, default=2048, help='Sampled point number [default: 2048]')
 parser.add_argument('--max_input_feat',  type=int, default=6, help='The maximum dimension of raw input features [Option: 3 or 6]')
 parser.add_argument('--input_feat', type=int, default=6, help='The dimension of raw input features [Option: 3 or 6]')
 parser.add_argument('--K', type=int, default=20, help='the maximum value of KNN')
@@ -200,9 +198,9 @@ if __name__ == '__main__':
                 model.test_accuracy /= batch_amount
 
                 # compute iou
-                predicted_label_total = torch.stack(predicted_label_total, dim=0).view(-1, opt.sample_num)
+                predicted_label_total = torch.stack(predicted_label_total, dim=0).view(-1, opt.num_point)
                 print(predicted_label_total.size())
-                gt_label_total = torch.stack(gt_label_total, dim=0).view(-1, opt.sample_num)
+                gt_label_total = torch.stack(gt_label_total, dim=0).view(-1, opt.num_point)
                 model.test_macc, model.test_iou, iou_perclass = compute_iou(predicted_label_total, gt_label_total, opt.classes)
                 log_string(str(iou_perclass))
 

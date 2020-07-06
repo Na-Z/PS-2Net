@@ -54,7 +54,7 @@ class MyDataset(DATA.Dataset):
         if self.opt.input_feat < self.opt.max_input_feat:
             data_slice = data_slice[:, :self.opt.input_feat]
 
-        indices = get_indices(self.opt.sample_num, point_num_curr)
+        indices = get_indices(self.opt.num_point, point_num_curr)
         data_slice = data_slice[indices,...]
         label_slice = label_slice[indices,...]
         _, knn_slice = self.knn_builder.self_build_search(data_slice[:,:3])

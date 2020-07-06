@@ -27,8 +27,8 @@ parser.add_argument('--classes', type=int, default=13, help='S3DIS or ScanNet')
 parser.add_argument('--log_dir', default='../log_s3dis/P2_**', help='Log dir [default: log]')
 parser.add_argument('--checkpoint', type=str, default=None, help='name of pre-trained network parameters')
 
-parser.add_argument('--max_point_num', type=int, default=8192, help='Maximum point number [default: 8192]')
-parser.add_argument('--sample_num', type=int, default=2048, help='Sampled point number [default: 2048]')
+parser.add_argument('--max_num_point', type=int, default=8192, help='Maximum point number [default: 8192]')
+parser.add_argument('--num_point', type=int, default=2048, help='Sampled point number [default: 2048]')
 parser.add_argument('--repeat_num', type=int, default=1, help='Repeat number')
 
 parser.add_argument('--max_input_feat',  type=int, default=6, help='The maximum dimension of raw input features [Option: 3 or 6]')
@@ -58,7 +58,7 @@ parser.add_argument('--augment', type=bool, default=False, help='Data augment or
 parser.add_argument('--test_area', type=int, default=5, help='Which areas to use for test, option:[1-6] [default: 5]')
 opt = parser.parse_args()
 
-opt.batch_size = opt.repeat_num * math.ceil(opt.max_point_num / opt.sample_num)
+opt.batch_size = opt.repeat_num * math.ceil(opt.max_num_point / opt.num_point)
 opt.nThreads = opt.batch_size
 
 args = vars(opt)
@@ -111,8 +111,8 @@ if __name__ == '__main__':
             # label = h5f['label_seg'][...]
             batch_num = data.shape[0]
 
-            labels_pred = np.full((batch_num, opt.max_point_num), -1, dtype=np.int32)
-            confidences_pred = np.zeros((batch_num, opt.max_point_num), dtype=np.float32)
+            labels_pred = np.full((batch_num, opt.max_num_point), -1, dtype=np.int32)
+            confidences_pred = np.zeros((batch_num, opt.max_num_point), dtype=np.float32)
 
             print('{}-{:d} testing batches.'.format(datetime.now(), batch_num))
             for batch_idx in range(batch_num):
@@ -121,13 +121,13 @@ if __name__ == '__main__':
                 points_batch = data[[batch_idx] * opt.batch_size, ...]
                 point_num = data_num[batch_idx]
 
-                tile_num = math.ceil((opt.sample_num * opt.batch_size) / point_num)
-                indices_shuffle = np.tile(np.arange(point_num), tile_num)[0:opt.sample_num * opt.batch_size]
+                tile_num = math.ceil((opt.num_point * opt.batch_size) / point_num)
+                indices_shuffle = np.tile(np.arange(point_num), tile_num)[0:opt.num_point * opt.batch_size]
                 np.random.shuffle(indices_shuffle)
-                indices_batch_shuffle = np.reshape(indices_shuffle, (opt.batch_size, opt.sample_num, 1))
+                indices_batch_shuffle = np.reshape(indices_shuffle, (opt.batch_size, opt.num_point, 1))
 
                 input_data = torch.from_numpy(points_batch.astype(np.float32)) #(B,N,C), N is the point_num
-                sampled_indices = torch.from_numpy(indices_batch_shuffle.astype(np.int64)) #(B,n,1), n is the sample_num
+                sampled_indices = torch.from_numpy(indices_batch_shuffle.astype(np.int64)) #(B,n,1), n is the num_point
                 sampled_indices = sampled_indices.expand(-1,-1,input_data.shape[2]).contiguous()
                 input_data = torch.gather(input_data, dim=1, index=sampled_indices) #(B,n,C)
 
@@ -140,10 +140,10 @@ if __name__ == '__main__':
                 preds = softmax(score) #(B,class,n)
                 preds = preds.transpose(1,2) #(B,n, class)
 
-                preds_2d = np.reshape(preds.cpu().detach().numpy(),(opt.sample_num*opt.batch_size, -1))
+                preds_2d = np.reshape(preds.cpu().detach().numpy(),(opt.num_point*opt.batch_size, -1))
 
                 predictions = [(-1, 0.0)] * point_num
-                for idx in range(opt.sample_num * opt.batch_size):
+                for idx in range(opt.num_point * opt.batch_size):
                     point_idx = indices_shuffle[idx]
                     probs = preds_2d[idx, :]
                     confidence = np.amax(probs)
