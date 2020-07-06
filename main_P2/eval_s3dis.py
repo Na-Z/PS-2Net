@@ -10,12 +10,12 @@ import h5py
 
 
 #==================== Merge S3DIS files ========================
-def merge_files(args):
-    categories_list = os.listdir(args.datafolder)
+def merge_files(area_dir):
+    categories_list = os.listdir(area_dir)
 
     for category in categories_list:
-        output_path = os.path.join(args.datafolder,category,"pred.npy")
-        label_length = np.load(os.path.join(args.datafolder,category,"label.npy")).shape[0]
+        output_path = os.path.join(area_dir,category,"pred.npy")
+        label_length = np.load(os.path.join(area_dir,category,"label.npy")).shape[0]
 
         merged_label_zero = np.zeros((label_length),dtype=int)
         merged_confidence_zero = np.zeros((label_length),dtype=float)
@@ -23,11 +23,11 @@ def merge_files(args):
         merged_confidence_half = np.zeros((label_length), dtype=float)
 
         final_label = np.zeros((label_length), dtype=int)
-        pred_list = [pred for pred in os.listdir(os.path.join(args.datafolder,category))
+        pred_list = [pred for pred in os.listdir(os.path.join(area_dir,category))
                      if pred.split(".")[-1] == "h5" and "pred" in pred]
         for pred_file in pred_list:
-            print(os.path.join(args.datafolder,category, pred_file))
-            data = h5py.File(os.path.join(args.datafolder,category, pred_file))
+            print(os.path.join(area_dir,category, pred_file))
+            data = h5py.File(os.path.join(area_dir,category, pred_file))
             labels_seg = data['label_seg'][...].astype(np.int64)
             indices = data['indices_split_to_full'][...].astype(np.int64)
             confidence = data['confidence'][...].astype(np.float32)
@@ -50,15 +50,15 @@ def merge_files(args):
 
 
 #==================== Evaluate S3DIS  ========================
-def evaluate_area(SRC_DIR, area):
+def evaluate_area(area_dir):
 
     gt_label_filenames = []
     pred_label_filenames = []
 
-    Rooms = os.listdir(os.path.join(SRC_DIR, area))
-    for room in Rooms:
-        path_gt_label = os.path.join(SRC_DIR, area, room,'label.npy')
-        path_pred_label = os.path.join(SRC_DIR, area, room,'pred.npy')
+    rooms = os.listdir(area_dir)
+    for room in rooms:
+        path_gt_label = os.path.join(area_dir, room,'label.npy')
+        path_pred_label = os.path.join(area_dir, room,'pred.npy')
         pred_label_filenames.append(path_pred_label)
         gt_label_filenames.append(path_gt_label)
 
@@ -112,7 +112,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-    merge_files(args)
+    area_dir = os.path.join(args.datafolder, 'Area_%d' %args.test_area)
+    merge_files(area_dir)
 
     print('=========Evaluate Area%d==========' %args.test_area)
-    evaluate_area(args.datafolder, args.test_area)
+    evaluate_area(area_dir)

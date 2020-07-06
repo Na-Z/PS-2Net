@@ -31,7 +31,6 @@ def compute_iou(pred_label, gt_label, NUM_CLASS):
         positive_classes[pred_l] += 1
         true_positive_classes[gt_l] += int(gt_l == pred_l)
 
-
     #discard the unannotated class
     gt_classes = gt_classes[1:]
     positive_classes = positive_classes[1:]
@@ -103,7 +102,6 @@ def main():
         pred_indices = data_pred['indices_split_to_full'][...].astype(np.int64)
         pred_confidence = data_pred['confidence'][...].astype(np.float32)
         pred_data_num = data_pred['data_num'][...].astype(np.int64)
-
         
         if 'zero' in pred_file:
             for b_id in range(pred_labels_seg.shape[0]):

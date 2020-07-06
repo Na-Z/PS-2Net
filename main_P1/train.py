@@ -12,7 +12,6 @@ import torch
 
 from visualizer import Visualizer
 from model import Model, compute_iou, compute_iou_scannet
-from data_util import mkdirs
 
 
 parser = argparse.ArgumentParser()
@@ -36,7 +35,7 @@ parser.add_argument('--pretrain_path', type=str, default=None,
 
 parser.add_argument('--display_winsize', type=int, default=256, help='display window size')
 parser.add_argument('--display_id', type=int, default=300, help='window id of the web display')
-parser.add_argument('--iter_error_print', type=int, default=200, help='the number of iterations to print training error')
+parser.add_argument('--iter_error_print', type=int, default=100, help='the number of iterations to print training error')
 parser.add_argument('--best_iou', type=float, default=0.25, help='theasfold (testing mIoU) to save network')
 
 parser.add_argument('--K', type=int, default=20, help='the maximum value of KNN')
@@ -77,7 +76,7 @@ print('-------------- End ----------------')
 
 
 LOG_DIR = opt.log_dir
-if not os.path.exists(LOG_DIR): mkdirs(LOG_DIR)
+if not os.path.exists(LOG_DIR): os.makedirs(LOG_DIR)
 LOG_FOUT = open(os.path.join(LOG_DIR, 'log_train.txt'), 'w')
 LOG_FOUT.write(str(opt) + '\n')
 save_model_dir = os.path.join(LOG_DIR, 'checkpoints/')
@@ -167,9 +166,7 @@ if __name__ == '__main__':
                     #accumulate loss
                     model.test_loss += model.loss.detach() * batch_size_test
 
-                    # accumulate accuracy
                     _, predicted_label = torch.max(model.score.detach(), dim=1, keepdim=False)
-
                     predicted_label_total.append(predicted_label.cpu().detach())
                     gt_label_total.append(model.input_label.cpu().detach())
 

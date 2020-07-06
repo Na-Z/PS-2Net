@@ -14,7 +14,7 @@ sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 
 from P2_data_loader import MyDataset
 from visualizer import Visualizer
-from model import Model, compute_iou
+from model import Model, compute_iou, compute_iou_scannet
 from data_util import *
 
 
@@ -37,7 +37,7 @@ parser.add_argument('--pretrain_path', type=str, default=None,
 parser.add_argument('--display_winsize', type=int, default=256, help='display window size')
 parser.add_argument('--display_id', type=int, default=700, help='window id of the web display')
 parser.add_argument('--iter_error_print', type=int, default=250, help='the number of iterations to print training error')
-parser.add_argument('--best_iou', type=float, default=0.45, help='theasfold (testing mIoU) to save network')
+parser.add_argument('--best_iou', type=float, default=0.25, help='theasfold (testing mIoU) to save network')
 
 parser.add_argument('--num_point', type=int, default=2048, help='Sampled point number [default: 2048]')
 parser.add_argument('--max_input_feat',  type=int, default=6, help='The maximum dimension of raw input features [Option: 3 or 6]')
@@ -82,7 +82,7 @@ print('-------------- End ----------------')
 
 
 LOG_DIR = opt.log_dir
-if not os.path.exists(LOG_DIR): mkdirs(LOG_DIR)
+if not os.path.exists(LOG_DIR): os.makedirs(LOG_DIR)
 LOG_FOUT = open(os.path.join(LOG_DIR, 'log_train.txt'), 'w')
 LOG_FOUT.write(str(opt) + '\n')
 save_model_dir = os.path.join(LOG_DIR, 'checkpoints/')
@@ -167,7 +167,6 @@ if __name__ == '__main__':
             with torch.no_grad():
                 batch_amount = 0
                 model.test_loss.data.zero_()
-                model.test_accuracy.data.zero_()
 
                 predicted_label_total = []
                 gt_label_total = []
@@ -185,12 +184,7 @@ if __name__ == '__main__':
                     #accumulate loss
                     model.test_loss += model.loss.detach() * batch_size_test
 
-                    # accumulate accuracy
                     _, predicted_label = torch.max(model.score.detach(), dim=1, keepdim=False)
-                    correct_mask = torch.eq(predicted_label, model.label.detach()).float()
-                    test_accuracy_batch = torch.mean(correct_mask)
-                    model.test_accuracy += test_accuracy_batch * batch_size_test
-
                     predicted_label_total.append(predicted_label.cpu().detach())
                     gt_label_total.append(model.label.cpu().detach())
 
@@ -201,7 +195,10 @@ if __name__ == '__main__':
                 predicted_label_total = torch.stack(predicted_label_total, dim=0).view(-1, opt.num_point)
                 print(predicted_label_total.size())
                 gt_label_total = torch.stack(gt_label_total, dim=0).view(-1, opt.num_point)
-                model.test_macc, model.test_iou, iou_perclass = compute_iou(predicted_label_total, gt_label_total, opt.classes)
+                if opt.dataset_name == 'S3DIS':
+                    model.test_accuracy, model.test_macc, model.test_iou, iou_perclass = compute_iou(predicted_label_total, gt_label_total, opt.classes)
+                elif opt.dataset_name == 'ScanNet':
+                    model.test_accuracy, model.test_macc, model.test_iou, iou_perclass = compute_iou_scannet(predicted_label_total, gt_label_total, opt.classes)
                 log_string(str(iou_perclass))
 
                 current_test_iou = model.test_iou

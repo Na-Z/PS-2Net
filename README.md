@@ -88,7 +88,7 @@ Please iterate `--test_area` option to obtain results on other areas. The final 
 + test:
     ```
     python main_P2/inference.py --dataset_name ScanNet --data_dir ./datasets/ScanNet/P2/ --classes 21 --input_feat 3 --log_dir $LOG_DIR  --checkpoint $CHECKPOINT_FILENAME 
-    python main_P2/eval_scannet.py --datafolder ./datasets/ScanNet/P2/ --picklefile ./datasets/ScanNet/P3/
+    python main_P2/eval_scannet.py --datafolder ./datasets/ScanNet/P2/test --picklefile ./datasets/ScanNet/P3/scannet_test.pickle
     ```    
 
 ## Citation

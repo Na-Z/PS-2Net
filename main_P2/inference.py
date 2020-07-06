@@ -2,9 +2,10 @@ from datetime import datetime
 import os
 import sys
 import argparse
-import torch
+import numpy as np
 import math
 import h5py
+import torch
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)

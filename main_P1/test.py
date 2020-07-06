@@ -1,4 +1,5 @@
 import os
+import math
 import sys
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
@@ -9,7 +10,6 @@ sys.path.append(os.path.join(ROOT_DIR, 'utils'))
 import argparse
 import torch
 
-from train import log_string
 from model import import_class, compute_iou, compute_iou_scannet
 from network import *
 
@@ -28,6 +28,7 @@ parser.add_argument('--checkpoint', type=str, default=None, help='name of pre-tr
 
 parser.add_argument('--nThreads', default=1, type=int, help='# threads for loading data')
 parser.add_argument('--batch_size', type=int, default=1, help='Batch Size during training')
+parser.add_argument('--max_volumes', type=int, default=18, help='Maximum processing volumrs during testing')
 
 parser.add_argument('--num_point', type=int, default=4096, help='Point number [default: 4096]')
 parser.add_argument('--input_feat', type=int, default=3, help='The dimension of raw input features [Option: 3 or 9]')
@@ -70,6 +71,12 @@ LOG_FOUT = open(os.path.join(LOG_DIR, 'log_test_ep%s.txt' %opt.checkpoint.split(
 LOG_FOUT.write(str(opt) + '\n')
 
 
+def log_string(out_str):
+    LOG_FOUT.write(out_str + '\n')
+    LOG_FOUT.flush()
+    print(out_str)
+
+
 if __name__ == '__main__':
 
     if opt.dataset_name == 'S3DIS':
@@ -103,13 +110,40 @@ if __name__ == '__main__':
         for i, data in enumerate(testloader):
             input_pc, knn_idx, input_label = data
 
-            input_pc = input_pc.cuda()
-            knn_idx = knn_idx.long().cuda()
-            input_label = input_label.long().cuda()
+            if opt.dataset_name == 'ScanNet':
+                input_pc = input_pc.view(-1, input_pc.shape[2], input_pc.shape[3]).cuda()
+                knn_idx = knn_idx.view(-1, knn_idx.shape[2], knn_idx.shape[3]).long().cuda()
+                input_label = input_label.view(-1, input_label.shape[2]).long().cuda()
+            else:
+                input_pc = input_pc.cuda()
+                knn_idx = knn_idx.long().cuda()
+                input_label = input_label.long().cuda()
 
             network.eval()
-            score = network(input_pc, knn_idx)
-            pred = softmax(score)
+
+            # When evaluate ScanNet whole scene, process the scene in batch if the scene contains too many blocks.
+            if input_pc.shape[0] > opt.max_volumes:
+                num_batches = math.ceil(input_pc.shape[0] / opt.max_volumes)
+                # print('The number of resultant volumes (%d) is larger than max_volumes (%d), processing in %d batches'
+                #      %(input_pc.shape[0], opt.max_volumes, num_batches))
+                pred = []
+
+                for j in range(num_batches):
+                    start_idx = j*opt.max_volumes
+                    if j != num_batches -1:
+                        end_idx = (j+1)*opt.max_volumes
+                    else:
+                        end_idx = input_pc.shape[0] + 1
+                    pc_slice = input_pc[start_idx:end_idx,:,:]
+                    knn_slice = knn_idx[start_idx:end_idx,:,:]
+
+                    score_slice = network(pc_slice, knn_slice)
+                    pred_slice = softmax(score_slice)
+                    pred.append(pred_slice)
+                pred = torch.cat(pred, dim=0)
+            else:
+                score = network(input_pc, knn_idx)
+                pred = softmax(score)
 
             # accumulate accuracy
             _, predicted_label = torch.max(pred.detach(), dim=1, keepdim=False)
@@ -118,9 +152,9 @@ if __name__ == '__main__':
             gt_label_total.append(input_label.cpu().detach())
 
         # compute iou
-        predicted_label_total = torch.stack(predicted_label_total, dim=0).view(-1, opt.num_point)
+        predicted_label_total = torch.cat(predicted_label_total, dim=0).view(-1, opt.num_point)
         print(predicted_label_total.size())
-        gt_label_total = torch.stack(gt_label_total, dim=0).view(-1, opt.num_point)
+        gt_label_total = torch.cat(gt_label_total, dim=0).view(-1, opt.num_point)
         if opt.dataset_name == 'S3DIS':
             test_accuracy, test_macc, test_iou, iou_perclass = compute_iou(predicted_label_total, gt_label_total, opt.classes)
         elif opt.dataset_name == 'ScanNet':
