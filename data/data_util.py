@@ -65,14 +65,6 @@ def grouped_shuffle(inputs):
     return outputs
 
 
-def mkdirs(paths):
-    if isinstance(paths, list) and not isinstance(paths, str):
-        for path in paths:
-            mkdir(path)
-    else:
-        mkdir(paths)
-
-
 def is_h5_list(filelist):
     return all([line.strip()[-3:] == '.h5' for line in open(filelist)])
 

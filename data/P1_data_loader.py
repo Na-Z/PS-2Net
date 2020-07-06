@@ -153,9 +153,9 @@ class ScannetDataset(DATA.Dataset):
         choice = np.random.choice(len(cur_semantic_seg), self.npoints, replace=True)
         point_set = cur_point_set[choice, :]
         semantic_seg = cur_semantic_seg[choice]
-        mask = mask[choice]
-        sample_weight = self.labelweights[semantic_seg]
-        sample_weight *= mask
+        # mask = mask[choice]
+        # sample_weight = self.labelweights[semantic_seg]
+        # sample_weight *= mask
 
         _, knn_slice = self.knn_builder.self_build_search(point_set[:, :3])
 
@@ -163,9 +163,9 @@ class ScannetDataset(DATA.Dataset):
         data = torch.from_numpy(point_set.transpose().astype(np.float32))  # 3xN
         label = torch.from_numpy(semantic_seg.astype(np.int64))  # N
         knn = torch.from_numpy(knn_slice.astype(np.int64))
-        weight = torch.from_numpy(sample_weight.astype(np.float32))
+        # weight = torch.from_numpy(sample_weight.astype(np.float32))
 
-        return data, knn, label, weight
+        return data, knn, label
 
     def __len__(self):
         return len(self.scene_points_list)
@@ -205,8 +205,8 @@ class ScannetDatasetWholeScene(DATA.Dataset):
         point_sets = list()
         semantic_segs = list()
         knn_list = list()
-        sample_weights = list()
-        isvalid = False
+        # sample_weights = list()
+        # isvalid = False
         for i in range(nsubvolume_x):
             for j in range(nsubvolume_y):
                 curmin = coordmin + [i * 1.5, j * 1.5, 0]
@@ -231,18 +231,18 @@ class ScannetDatasetWholeScene(DATA.Dataset):
                 point_sets.append(np.expand_dims(point_set.transpose(), 0))  # 1x3xN
                 knn_list.append(np.expand_dims(knn_slice, 0))
                 semantic_segs.append(np.expand_dims(semantic_seg, 0))  # 1xN
-                sample_weights.append(np.expand_dims(sample_weight, 0))  # 1xN
+                # sample_weights.append(np.expand_dims(sample_weight, 0))  # 1xN
         point_sets = np.concatenate(tuple(point_sets), axis=0)
         knn_list = np.concatenate(tuple(knn_list), axis=0)
         semantic_segs = np.concatenate(tuple(semantic_segs), axis=0)
-        sample_weights = np.concatenate(tuple(sample_weights), axis=0)
+        # sample_weights = np.concatenate(tuple(sample_weights), axis=0)
 
         data = torch.from_numpy(point_sets.astype(np.float32))  # Bx3xN
         knn = torch.from_numpy(knn_list.astype(np.int64))  # BxNxK
         label = torch.from_numpy(semantic_segs.astype(np.int64))  # BxN
-        weight = torch.from_numpy(sample_weights.astype(np.float32))
+        # weight = torch.from_numpy(sample_weights.astype(np.float32))
 
-        return data, knn, label, weight
+        return data, knn, label
 
     def __len__(self):
         return len(self.scene_points_list)
