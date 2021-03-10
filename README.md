@@ -94,11 +94,12 @@ Please iterate `--test_area` option to obtain results on other areas. The final 
 ## Citation
 Please cite our paper if it is helpful to your research:
 
-    @article{zhao2019ps,
-      title={PS\^{} 2-Net: A Locally and Globally Aware Network for Point-Based Semantic Segmentation},
-      author={Zhao, Na and Chua, Tat-Seng and Lee, Gim Hee},
-      journal={arXiv preprint arXiv:1908.05425},
-      year={2019}
+    @inproceedings{zhao2020ps,
+	title={PS\^{} 2-Net: A Locally and Globally Aware Network for Point-Based Semantic Segmentation},
+	author={Zhao, Na and Chua, Tat-Seng and Lee, Gim Hee},
+	booktitle={Proceedings of the 25th International Conference on Pattern Recognition (ICPR)},
+	pages={723--730},
+	year={2020}
     }
 
 
